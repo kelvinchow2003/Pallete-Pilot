@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palette Pilot: Color Tools</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Palette Pilot: Color Tools</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        
         /* Base Background Color for Soft UI */
         body {
             font-family: 'Inter', sans-serif;
@@ -20,16 +19,15 @@
             justify-content: center;
             padding: 2rem;
         }
-
-        
+        /* Soft UI/Neumorphism Panel Style */
         .soft-ui-panel {
             background: #f0f0f3;
             border-radius: 20px;
+            /* Key Neumorphism Shadow: Light top-left shadow, Dark bottom-right shadow */
             box-shadow: 10px 10px 20px #d9d9dc, -10px -10px 20px #ffffff;
             transition: all 0.3s ease;
         }
-
-        /* Soft UI Button Style */
+        /* Soft UI Button Style (Embossed look) */
         .soft-ui-button {
             border: none;
             outline: none;
@@ -43,7 +41,7 @@
         .soft-ui-button:hover:not(:disabled) {
             transform: scale(1.02);
         }
-        /* Pressed state  */
+        /* Pressed state (Inset shadow) */
         .soft-ui-button:active:not(:disabled) {
             box-shadow: inset 3px 3px 7px #d9d9dc, inset -3px -3px 7px #ffffff;
             transform: scale(0.98);
@@ -52,7 +50,6 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-
         /* Color Block Styling */
         .color-block {
             height: 100%;
@@ -86,7 +83,6 @@
         /* Utility for high contrast text based on color brightness */
         .light-text { color: #f7f9fb; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); }
         .dark-text { color: #1f2937; text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.5); }
-
         /* Canvas container styles for aspect ratio */
         .canvas-container {
             width: 100%;
@@ -107,8 +103,12 @@
             max-height: 100%;
             object-fit: contain;
             user-select: none;
+            /* Custom cursors for visual feedback */
+            cursor: crosshair;
         }
-        
+        #color-canvas.locked {
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M25 10v-3c0-3.866-3.134-7-7-7s-7 3.134-7 7v3h-5v22h24v-22h-5zm-14-3c0-2.761 2.238-5 5-5s5 2.239 5 5v3h-10v-3zm14 20h-20v-18h20v18z'/><path fill='%236D28D9' d='M16 23c-1.104 0-2-.896-2-2s.896-2 2-2 2 .896 2 2-.896 2-2 2zm0-6c-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4-1.791-4-4-4z'/></svg>") 16 16, pointer; /* Custom lock cursor */
+        }
         /* File Input Customization to fit Soft UI */
         input[type="file"] {
             font-size: 1rem;
@@ -132,97 +132,83 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-
-    </style>
+</style>
 </head>
 <body>
-
-    <!-- Main Container -->
-    <div class="w-full max-w-6xl soft-ui-panel p-6 sm:p-10 space-y-8">
-
-        <header class="text-center space-y-2">
-            <h1 class="text-4xl font-extrabold text-gray-800">Palette Pilot</h1>
-            <p class="text-xl text-gray-500">Your dual tool for color inspiration.</p>
-        </header>
-
-        <!-- Main Content Grid (Random Generator | Image Picker) -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-            <!-- Random Palette Generator (Left Panel) -->
-            <section id="random-generator-panel" class="space-y-6 p-6 soft-ui-panel shadow-none border-t-2 border-l-2 border-white/50">
-                <h2 class="text-2xl font-bold text-indigo-600">Random Palette Generator</h2>
-                
-                <!-- Color Palette Display -->
-                <div id="palette-container" class="grid grid-cols-2 sm:grid-cols-5 gap-4 h-56 sm:h-64 rounded-xl overflow-hidden">
-                    <!-- Color blocks will be injected here -->
-                </div>
-
-                <!-- Controls and Feedback -->
-                <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-                    <button id="generate-button"
+<!-- Main Container -->
+<div class="w-full max-w-6xl soft-ui-panel p-6 sm:p-10 space-y-8">
+<header class="text-center space-y-2">
+<h1 class="text-4xl font-extrabold text-gray-800">Palette Pilot</h1>
+<p class="text-xl text-gray-500">Your dual tool for color inspiration.</p>
+</header>
+<!-- Main Content Grid (Random Generator | Image Picker) -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Random Palette Generator (Left Panel) -->
+<section id="random-generator-panel" class="space-y-6 p-6 soft-ui-panel shadow-none border-t-2 border-l-2 border-white/50">
+<h2 class="text-2xl font-bold text-indigo-600">Random Palette Generator</h2>
+<!-- Color Palette Display -->
+<div id="palette-container" class="grid grid-cols-2 sm:grid-cols-5 gap-4 h-56 sm:h-64 rounded-xl overflow-hidden">
+<!-- Color blocks will be injected here -->
+</div>
+<!-- Controls and Feedback -->
+<div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+<button id="generate-button"
                             class="soft-ui-button px-8 py-3 w-full sm:w-auto text-indigo-600 focus:ring-4 focus:ring-indigo-300">
                         Generate New Palette
-                    </button>
-                    <!-- Notification/Feedback Display (Copy Success) -->
-                    <div id="copy-notification" class="text-lg font-medium text-indigo-600 opacity-0 transition-opacity duration-300">
+</button>
+<!-- Notification/Feedback Display (Copy Success) -->
+<div id="copy-notification" class="text-lg font-medium text-indigo-600 opacity-0 transition-opacity duration-300">
                         Hex code copied!
-                    </div>
-                </div>
-            </section>
-
-            <!-- Image Color Picker  -->
-            <section id="image-picker-panel" class="space-y-4 p-6 soft-ui-panel shadow-none border-t-2 border-l-2 border-white/50">
-                <h2 class="text-2xl font-bold text-indigo-600">Image Color Picker</h2>
-                
-                <input type="file" id="image-upload" accept="image/*" class="w-full">
-
-                <div class="canvas-container flex items-center justify-center">
-                    <canvas id="color-canvas" class="cursor-crosshair hidden"></canvas>
-                    <div id="canvas-placeholder" class="absolute inset-0 flex items-center justify-center text-gray-500 p-4 text-center pointer-events-none">
+</div>
+</div>
+</section>
+<!-- Image Color Picker (Right Panel - New Feature) -->
+<section id="image-picker-panel" class="space-y-4 p-6 soft-ui-panel shadow-none border-t-2 border-l-2 border-white/50">
+<h2 class="text-2xl font-bold text-indigo-600">Image Color Picker</h2>
+<input type="file" id="image-upload" accept="image/*" class="w-full">
+<div class="canvas-container flex items-center justify-center">
+<canvas id="color-canvas" class="cursor-crosshair hidden"></canvas>
+<div id="canvas-placeholder" class="absolute inset-0 flex items-center justify-center text-gray-500 p-4 text-center pointer-events-none">
                         Upload an image above to start hovering and picking colors.
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-4 pt-2">
-                    <div id="hover-color-box" class="w-10 h-10 rounded-lg border-2 border-gray-300 shadow-inner bg-white transition duration-100"></div>
-                    <div class="text-xl font-medium text-gray-700">Current Hex:</div>
-                    <div id="hover-hex-code" class="text-2xl font-mono text-gray-800 font-bold">#------</div>
-                    <button id="copy-hex-button" 
-                            class="soft-ui-button px-4 py-2 text-indigo-600" 
+</div>
+</div>
+<div class="flex items-center space-x-4 pt-2">
+<div id="hover-color-box" class="w-10 h-10 rounded-lg border-2 border-gray-300 shadow-inner bg-white transition duration-100"></div>
+<div id="hex-label" class="text-xl font-medium text-gray-700">Current Hex:</div>
+<div id="hover-hex-code" class="text-2xl font-mono text-gray-800 font-bold">#------</div>
+<button id="copy-hex-button"
+                            class="soft-ui-button px-4 py-2 text-indigo-600"
                             disabled>
                         Copy Hex
-                    </button>
-                </div>
-            </section>
-        </div>
-
-        <!-- Custom Modal-->
-        <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center z-50" onclick="closeModal()">
-            <div id="modal-message" class="soft-ui-panel p-6 rounded-xl transform transition-all duration-300 scale-95 opacity-0" onclick="event.stopPropagation()">
-                <h3 id="modal-title" class="text-xl font-bold mb-3 text-gray-800">Copied!</h3>
-                <p id="modal-content" class="text-gray-600 mb-4 font-mono"></p>
-                <div class="flex justify-end">
-                    <button class="soft-ui-button px-4 py-2 text-indigo-600" onclick="closeModal()">OK</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
+</button>
+</div>
+</section>
+</div>
+<!-- Custom Modal (for non-clipboard copy confirmation) -->
+<div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center z-50" onclick="closeModal()">
+<div id="modal-message" class="soft-ui-panel p-6 rounded-xl transform transition-all duration-300 scale-95 opacity-0" onclick="event.stopPropagation()">
+<h3 id="modal-title" class="text-xl font-bold mb-3 text-gray-800">Copied!</h3>
+<p id="modal-content" class="text-gray-600 mb-4 font-mono"></p>
+<div class="flex justify-end">
+<button class="soft-ui-button px-4 py-2 text-indigo-600" onclick="closeModal()">OK</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // --- Global State ---
+        let isLocked = false;
         // --- Utility Functions ---
-
         /**
-         * Generates a random six-digit hexadecimal color code.
-         */
+        * Generates a random six-digit hexadecimal color code.
+        */
         function generateColor() {
             const randomColor = Math.floor(Math.random() * 16777215).toString(16);
             return "#" + randomColor.padStart(6, '0').toUpperCase();
         }
-
         /**
-         * Determines if a color is light or dark for contrasting text color.
-         */
+        * Determines if a color is light or dark for contrasting text color.
+        */
         function isLight(hex) {
             const r = parseInt(hex.substring(1, 3), 16);
             const g = parseInt(hex.substring(3, 5), 16);
@@ -230,17 +216,15 @@
             const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
             return luminance > 0.6;
         }
-
         /**
-         * Converts RGB values to a Hex string.
-         */
+        * Converts RGB values to a Hex string.
+        */
         function rgbToHex(r, g, b) {
             return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
         }
-
         /**
-         * Copies the given text to the clipboard and shows a notification.
-         */
+        * Copies the given text to the clipboard and shows a notification.
+        */
         function copyToClipboard(textToCopy) {
             try {
                 // Use document.execCommand('copy') for better compatibility in iFrames
@@ -250,56 +234,44 @@
                 textarea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
-
                 // Show visual feedback
                 const notification = document.getElementById('copy-notification');
                 notification.textContent = `${textToCopy} copied!`;
                 notification.classList.remove('opacity-0');
                 notification.classList.add('opacity-100');
-
                 setTimeout(() => {
                     notification.classList.remove('opacity-100');
                     notification.classList.add('opacity-0');
                 }, 1500);
-
             } catch (err) {
                 // Fallback for clipboard failures
                 showModal("Copy Failed", `Could not automatically copy. Please manually copy this hex code: ${textToCopy}`);
             }
         }
-
         // --- Random Palette Core Logic ---
-
         function generatePalette() {
             const paletteContainer = document.getElementById('palette-container');
             paletteContainer.innerHTML = '';
-            
             const colors = Array(5).fill(0).map(() => generateColor());
-
-            
-            document.body.style.backgroundColor = colors[0] + '10'; 
-
+            // Update background slightly for a dynamic feel
+            document.body.style.backgroundColor = colors[0] + '10';
             colors.forEach(color => {
                 const isColorLight = isLight(color);
                 const block = document.createElement('div');
                 // Use the defined color-block class for styling
                 block.className = `color-block ${isColorLight ? 'dark-text' : 'light-text'}`;
                 block.style.backgroundColor = color;
-                
                 block.innerHTML = `<span class="color-text transition duration-300">${color}</span>`;
-                
                 block.addEventListener('click', () => {
                     copyToClipboard(color);
                 });
-
                 paletteContainer.appendChild(block);
             });
         }
-
-        //Image Picker Core Logic 
-
+        // --- Image Picker Core Logic ---
         const imageUpload = document.getElementById('image-upload');
         const colorCanvas = document.getElementById('color-canvas');
+        const hexLabel = document.getElementById('hex-label');
         // Setting willReadFrequently to true for performance during frequent reads (mousemove)
         const ctx = colorCanvas.getContext('2d', { willReadFrequently: true });
         const canvasPlaceholder = document.getElementById('canvas-placeholder');
@@ -307,36 +279,52 @@
         const hoverHexCode = document.getElementById('hover-hex-code');
         const copyHexButton = document.getElementById('copy-hex-button');
         const generateButton = document.getElementById('generate-button'); // Get reference to the Generate button
-
+        function updateLockUI(locked) {
+            if (locked) {
+                colorCanvas.classList.add('locked');
+                hexLabel.textContent = "Locked Hex:";
+            } else {
+                colorCanvas.classList.remove('locked');
+                hexLabel.textContent = "Current Hex:";
+            }
+        }
+        function handleMouseDown(event) {
+            // Only respond to left-click (button 0)
+            if (event.button !== 0) return;
+            // Prevent default drag behaviors
+            event.preventDefault();
+            // If an image is loaded (copy button is not disabled), toggle lock
+            if (!copyHexButton.disabled) {
+                isLocked = !isLocked;
+                updateLockUI(isLocked);
+            }
+        }
         function handleImageUpload(event) {
+            // Reset lock state when a new image is uploaded
+            isLocked = false;
+            updateLockUI(isLocked);
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
-                img.crossOrigin = "Anonymous"; 
+                img.crossOrigin = "Anonymous"; // Attempt to handle CORS, though local files might still be restricted
                 img.onload = () => {
                     // 1. Set the canvas's internal resolution to the image's natural size
                     colorCanvas.width = img.naturalWidth;
                     colorCanvas.height = img.naturalHeight;
-                    
                     // 2. Draw the image to the canvas
                     ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
-                    
                     // 3. Show the canvas and hide the placeholder
                     canvasPlaceholder.classList.add('hidden');
                     colorCanvas.classList.remove('hidden');
-
-                    // 4. Set visual size of the canvas element 
+                    // 4. Set visual size of the canvas element (CSS handles object-fit: contain)
                     colorCanvas.style.width = '100%';
                     colorCanvas.style.height = '100%';
-
                     // 5. Add mouse listener for color picking
                     colorCanvas.addEventListener('mousemove', handleMouseMove);
                     colorCanvas.removeEventListener('mouseleave', handleMouseLeave);
                     colorCanvas.addEventListener('mouseleave', handleMouseLeave);
-                    
                     // Reset hover display
                     handleMouseLeave();
                 };
@@ -344,96 +332,84 @@
             };
             reader.readAsDataURL(file);
         }
-
         function handleMouseMove(event) {
+            // If the color is locked, ignore mouse movement
+            if (isLocked) return;
             // 1. Get mouse position relative to the canvas element's *display* size
             const rect = colorCanvas.getBoundingClientRect();
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
-
             // 2. Map mouse position (display pixels) to canvas data pixels
             const canvasDisplayWidth = colorCanvas.offsetWidth;
             const canvasDisplayHeight = colorCanvas.offsetHeight;
-
             const pixelX = Math.floor(mouseX * (colorCanvas.width / canvasDisplayWidth));
             const pixelY = Math.floor(mouseY * (colorCanvas.height / canvasDisplayHeight));
-
             // 3. Get pixel data
             try {
                 // Check bounds to prevent errors at edges
-                if (pixelX < 0 || pixelX >= colorCanvas.width || pixelY < 0 || pixelY >= colorCanvas.height) return;
-
+                if (pixelX < 0 || pixelX >= colorCanvas.width || pixelY < 0 || pixelY >= colorCanvas.height) {
+                    handleMouseLeave();
+                    return;
+                }
                 const pixelData = ctx.getImageData(pixelX, pixelY, 1, 1).data;
                 const r = pixelData[0];
                 const g = pixelData[1];
                 const b = pixelData[2];
-
                 const hex = rgbToHex(r, g, b);
-                
-                
+                // 4. Update UI
                 hoverColorBox.style.backgroundColor = hex;
                 hoverHexCode.textContent = hex;
                 copyHexButton.disabled = false;
                 copyHexButton.setAttribute('data-current-hex', hex);
             } catch (error) {
-                // Catch security error if image is from a different domain 
+                // Catch security error if image is from a different domain (CORS issue)
                 handleMouseLeave();
                 console.error("Image data read failed, likely a CORS restriction.");
             }
         }
-        
         function handleMouseLeave() {
+            // Only reset if it is not locked
+            if (isLocked) return;
             // Reset UI when mouse leaves the canvas
             hoverColorBox.style.backgroundColor = '#ffffff';
             hoverHexCode.textContent = '#------';
             copyHexButton.disabled = true;
             copyHexButton.setAttribute('data-current-hex', '');
         }
-
-        
+        // --- Modal Functions (replacing alert()) ---
         function showModal(title, content) {
             const backdrop = document.getElementById('modal-backdrop');
             const message = document.getElementById('modal-message');
             document.getElementById('modal-title').textContent = title;
             document.getElementById('modal-content').textContent = content;
-
             backdrop.classList.remove('hidden');
             backdrop.classList.add('flex');
-            
             setTimeout(() => {
                 message.classList.remove('scale-95', 'opacity-0');
                 message.classList.add('scale-100', 'opacity-100');
             }, 10);
         }
-
         function closeModal() {
             const backdrop = document.getElementById('modal-backdrop');
             const message = document.getElementById('modal-message');
-
             message.classList.remove('scale-100', 'opacity-100');
             message.classList.add('scale-95', 'opacity-0');
-
             setTimeout(() => {
                 backdrop.classList.remove('flex');
                 backdrop.classList.add('hidden');
             }, 300);
         }
-
-        //Initialization
-
+        // --- Initialization ---
         imageUpload.addEventListener('change', handleImageUpload);
+        colorCanvas.addEventListener('mousedown', handleMouseDown); // New listener for locking
         copyHexButton.addEventListener('click', () => {
             const hex = copyHexButton.getAttribute('data-current-hex');
             if (hex && hex !== '#------') {
                 copyToClipboard(hex);
             }
         });
-        
-        // Add event listener for the Generate button
-        generateButton.addEventListener('click', generatePalette); 
-
+        generateButton.addEventListener('click', generatePalette);
         window.onload = generatePalette;
-
-    </script>
+</script>
 </body>
 </html>
