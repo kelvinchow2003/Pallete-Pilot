@@ -22,6 +22,7 @@ Built with a soft, neumorphic UI for a calming, tactile experience — no harsh 
 - See the hex code update dynamically as you move.
 - One-click copy for the currently hovered color.
 - Works with local files and respects CORS where possible.
+- Generate a palette thats tailoured to the image you uploaded
 
 ### 🧘‍♀️ Soft UI Design
 - Neumorphic styling: Gentle shadows, embossed buttons, and subtle depth.
